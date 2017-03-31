@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
-	<classpathentry kind="lib" path="lib/aerospike-client-3.3.2-jar-with-dependencies.jar"/>
 	<classpathentry kind="lib" path="E:/WJW_DATA/OpenSource/Groovy/lib/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/aerospike-client-3.3.3-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

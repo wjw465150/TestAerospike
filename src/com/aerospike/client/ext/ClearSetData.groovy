@@ -9,6 +9,7 @@ import com.aerospike.client.Record
 import com.aerospike.client.ResultCode
 import com.aerospike.client.ScanCallback
 import com.aerospike.client.policy.ScanPolicy
+import com.aerospike.client.policy.WritePolicy
 
 /**
  * 清空指定Set的全部数据!
@@ -20,12 +21,12 @@ import com.aerospike.client.policy.ScanPolicy
 String strUsage='''/opt/app/groovy/bin/groovy -cp ${/path/aerospike-client-X.X.X-jar-with-dependencies.jar} /opt/app/groovy/script/ClearSetData.groovy -h ${ass_ip} -p ${ass_port:3000} -n ${namespace_name} -s ${set_name}
 '''
 
-def cmdline = new CliBuilder(width: 200, usage: strUsage,header:"Options:")
+def cmdline = new CliBuilder(width: 300, usage: strUsage,header:"Options:")
 cmdline.u( longOpt: "usage", required: false, "Print usage." )
-cmdline.h( longOpt: "host", required: true, args: 1, "Server hostname (default: localhost)" )
-cmdline.p( longOpt: "port", required: true, args: 1, "Server port (default: 3000)" )
-cmdline.n( argName: "namespace", required: true, args: 1, "Namespace (default: test)" )
-cmdline.s( argName: "set", required: true, args: 1, "Set to delete (default: test)" )
+cmdline.h( longOpt: "host", required: true, args: 1, "Server hostname" )
+cmdline.p( longOpt: "port", required: true, args: 1, "Server port" )
+cmdline.n( argName: "namespace", required: true, args: 1, "Namespace" )
+cmdline.s( argName: "set", required: true, args: 1, "Set to delete" )
 
 def opt = cmdline.parse(args)
 if (!opt) { return }
@@ -34,35 +35,47 @@ if (opt.u) {
   return
 }
 
-String host = "127.0.0.1"
+String host = null
 if (opt.h) {
   host = opt.h
 }
+if (host == null){
+  println "You must specify a host"
+  return
+}
 
-int port=3000
+int port=0
 if (opt.p) {
   port = opt.p.toInteger()
 }
+if (port == 0){
+  println "You must specify a port"
+  return
+}
 
-String namespace = "test"
+String namespace = null
 if (opt.n) {
   namespace = opt.n
 }
+if (namespace == null){
+  println "You must specify a namespace"
+  return
+}
 
-String set = "test"
+String set = null
 if (opt.s) {
   set = opt.s
+}
+if (set == null){
+  println "You must specify a set"
+  return
 }
 
 println "Host: ${host}"
 println "Port: ${port}"
 println "Name space: ${namespace}"
-println "Set: " + set
+println "Set: ${set}"
 
-if (set == null){
-  println "You must specify a set"
-  return
-}
 
 try {
   int count = 0
@@ -72,21 +85,26 @@ try {
 
   ScanPolicy scanPolicy = new ScanPolicy()
   scanPolicy.includeBinData = false
+
+  WritePolicy writePolicy = new WritePolicy(client.writePolicyDefault)
+  writePolicy.timeout = 3000
+
   /*
    * scan the entire Set using scanAll(). This will scan each node
    * in the cluster and return the record Digest to the call back object
    */
   client.scanAll(scanPolicy, namespace, set, new ScanCallback() {
         public void scanCallback(Key key, Record record) throws AerospikeException {
-          if (client.delete(null, key)) {
+          if (client.delete(writePolicy, key)) {
             count++
           }
+
           if (count % 10000 == 0){
             println "[${getCurrent()}] Deleted: ${count}"
           }
         }
-      }, new String[0]);
-    
+      }, new String[0])
+
   println "Deleted ${count} records from set ${set}"
 } catch (AerospikeException e) {
   int resultCode = e.getResultCode()

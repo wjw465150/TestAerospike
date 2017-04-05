@@ -93,17 +93,16 @@ try {
    * scan the entire Set using scanAll(). This will scan each node
    * in the cluster and return the record Digest to the call back object
    */
-  client.scanAll(scanPolicy, namespace, set, new ScanCallback() {
-        public void scanCallback(Key key, Record record) throws AerospikeException {
-          if (client.delete(writePolicy, key)) {
-            count++
-          }
+  def scanCallback={Key key, Record record ->
+    if (client.delete(writePolicy, key)) {
+      count++
+    }
 
-          if (count % 10000 == 0){
-            println "[${getCurrent()}] Deleted: ${count}"
-          }
-        }
-      }, new String[0])
+    if (count % 10000 == 0){
+      println "[${getCurrent()}] Deleted: ${count}"
+    }
+  }
+  client.scanAll(scanPolicy, namespace, set, scanCallback, [] as String[])
 
   println "Deleted ${count} records from set ${set}"
 } catch (AerospikeException e) {

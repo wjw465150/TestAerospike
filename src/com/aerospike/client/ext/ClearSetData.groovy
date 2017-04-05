@@ -7,9 +7,10 @@ import com.aerospike.client.AerospikeException
 import com.aerospike.client.Key
 import com.aerospike.client.Record
 import com.aerospike.client.ResultCode
-import com.aerospike.client.ScanCallback
 import com.aerospike.client.policy.ScanPolicy
 import com.aerospike.client.policy.WritePolicy
+
+import groovy.transform.CompileStatic
 
 /**
  * 清空指定Set的全部数据!
@@ -111,6 +112,7 @@ try {
   println "Error details: ${e}"
 }
 
+@CompileStatic
 private String getCurrent() {
   return (new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")).format(new java.util.Date())
 }

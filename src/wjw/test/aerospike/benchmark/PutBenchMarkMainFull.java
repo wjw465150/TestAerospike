@@ -68,7 +68,7 @@ public class PutBenchMarkMainFull {
       client = (new AerospikeClientWraper(args[0])).getClient();
 
       writePolicy = new WritePolicy(client.writePolicyDefault);
-      writePolicy.timeout = 1000;
+      writePolicy.socketTimeout = 1000;
       writePolicy.expiration = 0; //µ•Œª:√Î
     }
 

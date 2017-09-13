@@ -49,10 +49,10 @@ public final class AerospikeClientWraper {
     }
 
     ClientPolicy policy = new ClientPolicy();
-    policy.readPolicyDefault.timeout = readTimeout;
+    policy.readPolicyDefault.socketTimeout = readTimeout;
     policy.readPolicyDefault.maxRetries = 3;
     policy.readPolicyDefault.sleepBetweenRetries = 10;
-    policy.writePolicyDefault.timeout = writeTimeout;
+    policy.writePolicyDefault.socketTimeout = writeTimeout;
     policy.writePolicyDefault.maxRetries = 3;
     policy.writePolicyDefault.sleepBetweenRetries = 50;
     //The user defined key is not stored on the server by default . Instead, the user key is converted to a hash digest which is then used to identify a record. 
